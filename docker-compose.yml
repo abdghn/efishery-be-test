@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  rabbitmq3:
+    container_name: efishery_be_test_rabbitmq
+    image: rabbitmq:3-management-alpine
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      # AMQP protocol port
+      - '${RABBITMQ_PORT}:5672'
+      # HTTP management UI
+      - '${RABBITMQ_UI}:15672'
+    networks:
+      - efishery_be_test_network
+#  postgres:
+#    container_name: efishery_be_test_postgres
+#    image:  postgres:alpine
+#    restart: always
+#    environment:
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#    ports:
+#      - '${POSTGERS_PORT}:5432'
+#    networks:
+#      - efishery_be_test_network
+  mariadb:
+    image: bitnami/mariadb:latest
+    container_name: efishery_be_test_mariadb
+    hostname: localhost
+    restart: always
+    ports:
+      - '${MARIADB_PORT}:3306'
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_CHARACTER_SET=utf8
+    volumes:
+      - ./data/mariadb:/bitnami/mariadb
+    networks:
+      - efishery_be_test_network
+  mongodb:
+    image: bitnami/mongodb:latest
+    container_name: efishery_be_test_mongodb
+    restart: always
+    ports:
+      - '${MONGODB_PORT}:27017'
+    environment:
+      - MONGODB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    volumes:
+      - "./data/mongodb:/bitnami/mongodb"
+    networks:
+        - efishery_be_test_network
+
+networks:
+  efishery_be_test_network:
+    name: efishery_be_test_network
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
